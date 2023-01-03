@@ -1,4 +1,10 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using MonkeyApi.Data;
+using MonkeyApi;
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddDbContext<MonkeyApiContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("MonkeyApiContext") ?? throw new InvalidOperationException("Connection string 'MonkeyApiContext' not found.")));
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -21,6 +27,7 @@ var summaries = new[]
     "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
 };
 
+
 app.MapGet("/weatherforecast", () =>
 {
     var forecast = Enumerable.Range(1, 5).Select(index =>
@@ -34,6 +41,8 @@ app.MapGet("/weatherforecast", () =>
     return forecast;
 })
 .WithName("GetWeatherForecast");
+
+app.MapMonkeyEndpoints();
 
 app.Run();
 
