@@ -1,7 +1,8 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using MonkeyApi.Data;
 using MonkeyApi;
+using Microsoft.EntityFrameworkCore;
+
+
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<MonkeyApiContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("MonkeyApiContext") ?? throw new InvalidOperationException("Connection string 'MonkeyApiContext' not found.")));
