@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿
 using Microsoft.EntityFrameworkCore;
 using MonkeyApi.Model;
 
@@ -14,6 +11,6 @@ namespace MonkeyApi.Data
         {
         }
 
-        public DbSet<MonkeyApi.Model.Monkey> Monkey { get; set; } = default!;
+        public DbSet<Monkey> Monkey { get; set; } = default!;
     }
 }

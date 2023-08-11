@@ -1,11 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Dapper;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using MonkeyApi.Data;
 using MonkeyApi.Model;
 namespace MonkeyApi;
 
 public static class MonkeyEndpointsClass
 {
-    public static void MapMonkeyEndpoints (this IEndpointRouteBuilder routes)
+    public static void MapMonkeyEndpoints(this IEndpointRouteBuilder routes)
     {
         routes.MapGet("/api/Monkey", async (MonkeyApiContext db) =>
         {
@@ -14,9 +16,15 @@ public static class MonkeyEndpointsClass
         .WithName("GetAllMonkeys")
         .Produces<List<Monkey>>(StatusCodes.Status200OK);
 
-        routes.MapGet("/api/Monkey/{id}", async (int Id, MonkeyApiContext db) =>
+        routes.MapGet("/api/Monkey/{id}", async ([FromQuery] int Id, SqlConnectionFactory db) =>
         {
-            return await db.Monkey.FindAsync(Id)
+            using var connection = db.CreateConnection();
+
+            const string sql = "SELECT * FROM Monkey WHERE Id = @Id";
+
+            var monkey = await connection.QuerySingleOrDefaultAsync<Monkey>(sql, new { Id });
+
+            return monkey
                 is Monkey model
                     ? Results.Ok(model)
                     : Results.NotFound();
@@ -33,7 +41,7 @@ public static class MonkeyEndpointsClass
             {
                 return Results.NotFound();
             }
-            
+
             db.Update(monkey);
 
             await db.SaveChangesAsync();
